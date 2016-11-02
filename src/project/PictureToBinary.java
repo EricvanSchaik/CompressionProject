@@ -31,7 +31,7 @@ public class PictureToBinary {
 				for (int k = 0; k < 8; k++) {
 					for (int l = 0; l < 8; l++) {
 						Color c = new Color(image.getRGB(j * 8 + l, i * 8 + k));
-						cmd[1] = Integer.toString(c.getBlue());
+						cmd[1] =  Integer.toHexString(c.getBlue());
 						Process p = Runtime.getRuntime().exec(cmd);
 					}
 				}
