@@ -4,18 +4,18 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.nio.file.Files;
+
 
 /**
  * Created by eric on 25-10-16.
  */
 public class PictureToBinary {
 
-	public static String path = "/home/eric/Pictures";
+	public static String path = "/home/eric/IdeaProjects/CompressionProject/src/project";
 
 	public static void main(String[] args) throws Exception {
 		BufferedImage image = null;
-		String img = (args.length == 1 ? args[1] : "example.jpg");
+		String img = (args.length == 1 ? args[1] : "rsz_bird.jpg");
 		try {
 			File file = grayScale(path, img);
 			image = ImageIO.read(file);
@@ -23,20 +23,22 @@ public class PictureToBinary {
 			System.out.println("Couldn't find the image");
 		}
 
-//		send the picture to FPGA
-		String[] cmd = new String[2];
-		cmd[0] = "python sendByte.py";
+		String[] cmd = new String[3];
+		cmd[0] = "python";
+		cmd[1] = "/home/pi/Pictures/Webcam/sendByte.py";
+		cmd[2] = "";
 		for (int i = 0; i < (image.getHeight()) / 8; i++) {
-			for (int j = 0; j < (image.getWidth()) / 8; i++) {
+			for (int j = 0; j < (image.getWidth()) / 8; j++) {
 				for (int k = 0; k < 8; k++) {
 					for (int l = 0; l < 8; l++) {
-						Color c = new Color(image.getRGB(j * 8 + l, i * 8 + k));
-						cmd[1] =  Integer.toHexString(c.getBlue());
-						Process p = Runtime.getRuntime().exec(cmd);
+						Color c = new Color(image.getRGB(j*8 + l, i*8 + k));
+						cmd[2] = cmd[2].concat("0x" + Integer.toHexString(c.getBlue()) + ",");
 					}
 				}
 			}
 		}
+		System.out.println("cmd[2]: " + cmd[2]);
+		Process p = Runtime.getRuntime().exec(cmd);
 	}
 
 	public static File grayScale(String path, String img) {
