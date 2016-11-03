@@ -52,7 +52,7 @@ public class PictureToBinary2 {
 				//p.destroy();
 				//System.out.println(p.exitValue());
                         	//System.out.println("cmd[2]: " + cmd[2]);
-                        	//Process p = Runtime.getRuntime().exec(cmd); //THIS METHOD TAKES A SUPER LONG TIME TO EXCECUTE
+                        	//Process p = Runtime.getRuntime().exec(cmd); //THIS METHOD TAKES A SUPER LONG TIME TO EXCECUTE/
 				//p.waitFor();
 				//System.out.println(p.exitValue());
                         	//cmd[2] = "";
