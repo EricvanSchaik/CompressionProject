@@ -10,7 +10,7 @@ import java.io.*;
  */
 public class PictureToBinary2 {
 
-	public static String path = "/home/pi/Pictures/Webcam";
+	public static String path = "/home/dylan/IdeaProjects/CompressionProject/src/project";
 
 	public static void main(String[] args) throws Exception {
 		BufferedImage image = null;
@@ -24,7 +24,7 @@ public class PictureToBinary2 {
 
 		String[] cmd = new String[3];
 		cmd[0] = "python";
-		cmd[1] = "/home/pi/Pictures/Webcam/sendByte.py";
+		cmd[1] = "/home/dylan/IdeaProjects/CompressionProject/src/project/sendByte.py";
 		cmd[2] = "";
 		System.out.println(image.getHeight());
 		System.out.println(image.getWidth());
@@ -38,12 +38,12 @@ public class PictureToBinary2 {
 						sb.append("0x" + Integer.toHexString(c.getBlue()) + ",");
 					}
 				//cmd[2] = cmd[2].replaceFirst(".$","");
-                       		sb.setLength(sb.length()-1);
-				System.out.println(sb.toString());
-				ProcessBuilder pb = new ProcessBuilder(cmd[0], cmd[1], sb.toString());
-				pb.redirectErrorStream(true);
-                        	//Process p = pb.start();
-				//p.destroy();
+//				sb.setLength(sb.length()-1);
+//				System.out.println(sb.toString());
+//				ProcessBuilder pb = new ProcessBuilder(cmd[0], cmd[1], sb.toString());
+//				pb.redirectErrorStream(true);
+//				Process p = pb.start();
+//				p.destroy();
 				//BufferedReader reader =
 				//	new BufferedReader(new InputStreamReader(p.getInputStream()));
 				//	while ((reader.readLine()) != null) {}
@@ -51,33 +51,33 @@ public class PictureToBinary2 {
 				sb = new StringBuilder();
 				//p.destroy();
 				//System.out.println(p.exitValue());
-                        	//System.out.println("cmd[2]: " + cmd[2]);
-                        	//Process p = Runtime.getRuntime().exec(cmd); //THIS METHOD TAKES A SUPER LONG TIME TO EXCECUTE/
+                //System.out.println("cmd[2]: " + cmd[2]);
+                //Process p = Runtime.getRuntime().exec(cmd); //THIS METHOD TAKES A SUPER LONG TIME TO EXCECUTE/
 				//p.waitFor();
 				//System.out.println(p.exitValue());
-                        	//cmd[2] = "";
-                       		//p.waitFor();
-                       		//System.out.println("done process: " + i);
+                //cmd[2] = "";
+                //p.waitFor();
+                //System.out.println("done process: " + i);
 				}
 			//cmd[2] = cmd[2].replaceFirst(".$","");
 			//ProcessBuilder pb = new ProcessBuilder(cmd[0], cmd[1], cmd[2]);
 			//Process p = pb.start();
-                        //System.out.println("cmd[2]: " + cmd[2]);
-                        //Process p = Runtime.getRuntime().exec(cmd); //THIS METHOD TAKES A SUPER LONG TIME TO EXCECUTE
-                        //cmd[2] = "";
-                        //p.waitFor();
-                        //System.out.println("done process: " + i);
+            //System.out.println("cmd[2]: " + cmd[2]);
+            //Process p = Runtime.getRuntime().exec(cmd); //THIS METHOD TAKES A SUPER LONG TIME TO EXCECUTE
+            //cmd[2] = "";
+            //p.waitFor();
+			//System.out.println("done process: " + i);
 			}
 		System.out.println(i);
 		}
 		//System.out.println("done");
-                cmd[2] = cmd[2].replaceFirst(".$","");
-                //ProcessBuilder pb = new ProcessBuilder(cmd[0], cmd[1], cmd[2]);
-                //Process p = pb.start();
-                //System.out.println("cmd[2]: " + cmd[2]);
-                //Process p = Runtime.getRuntime().exec(cmd); //THIS METHOD TAKES A SUPER LONG TIME TO EXCECUTE
-                //cmd[2] = "";
-                //p.waitFor();
+		//cmd[2] = cmd[2].replaceFirst(".$","");
+		//ProcessBuilder pb = new ProcessBuilder(cmd[0], cmd[1], cmd[2]);
+		//Process p = pb.start();
+		//System.out.println("cmd[2]: " + cmd[2]);
+		//Process p = Runtime.getRuntime().exec(cmd); //THIS METHOD TAKES A SUPER LONG TIME TO EXCECUTE
+		//cmd[2] = "";
+		//p.waitFor();
 
 	}
 
