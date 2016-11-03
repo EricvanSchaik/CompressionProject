@@ -33,35 +33,20 @@ public class PictureToBinary2 {
 			for (int j = 0; j < (image.getWidth()) / 8; j++) {
 				for (int k = 0; k < 8; k++) {
 					for (int l = 0; l < 8; l++) {
-						Color c = new Color(image.getRGB(j*8 + l, i*8 + k));
-						//cmd[2] = cmd[2].concat("0x" + Integer.toHexString(c.getBlue()) + ",");
+						Color c = new Color(image.getRGB(j * 8 + l, i * 8 + k));
 						sb.append("0x" + Integer.toHexString(c.getBlue()) + ",");
 					}
-				//cmd[2] = cmd[2].replaceFirst(".$","");
-//				sb.setLength(sb.length()-1);
-//				System.out.println(sb.toString());
-//				ProcessBuilder pb = new ProcessBuilder(cmd[0], cmd[1], sb.toString());
-//				pb.redirectErrorStream(true);
-//				Process p = pb.start();
-//				p.destroy();
-				//BufferedReader reader =
-				//	new BufferedReader(new InputStreamReader(p.getInputStream()));
-				//	while ((reader.readLine()) != null) {}
+				//sb.setLength(sb.length()-1);
+				//ProcessBuilder pb = new ProcessBuilder(cmd[0], cmd[1], sb.toString());
+				//Process p = pb.start();
 				//p.waitFor();
-				sb = new StringBuilder();
-				//p.destroy();
-				//System.out.println(p.exitValue());
-                //System.out.println("cmd[2]: " + cmd[2]);
-                //Process p = Runtime.getRuntime().exec(cmd); //THIS METHOD TAKES A SUPER LONG TIME TO EXCECUTE/
-				//p.waitFor();
-				//System.out.println(p.exitValue());
-                //cmd[2] = "";
-                //p.waitFor();
-                //System.out.println("done process: " + i);
+				//sb = new StringBuilder();
 				}
-			//cmd[2] = cmd[2].replaceFirst(".$","");
-			//ProcessBuilder pb = new ProcessBuilder(cmd[0], cmd[1], cmd[2]);
-			//Process p = pb.start();
+			sb.setLength(sb.length()-1);
+			ProcessBuilder pb = new ProcessBuilder(cmd[0], cmd[1], sb.toString());
+			Process p = pb.start();
+			p.waitFor();
+			sb = new StringBuilder();
             //System.out.println("cmd[2]: " + cmd[2]);
             //Process p = Runtime.getRuntime().exec(cmd); //THIS METHOD TAKES A SUPER LONG TIME TO EXCECUTE
             //cmd[2] = "";
@@ -70,13 +55,9 @@ public class PictureToBinary2 {
 			}
 		System.out.println(i);
 		}
-		//System.out.println("done");
-		//cmd[2] = cmd[2].replaceFirst(".$","");
-		//ProcessBuilder pb = new ProcessBuilder(cmd[0], cmd[1], cmd[2]);
+		//sb.setLength(sb.length()-1);
+		//ProcessBuilder pb = new ProcessBuilder(cmd[0], cmd[1], sb.toString());
 		//Process p = pb.start();
-		//System.out.println("cmd[2]: " + cmd[2]);
-		//Process p = Runtime.getRuntime().exec(cmd); //THIS METHOD TAKES A SUPER LONG TIME TO EXCECUTE
-		//cmd[2] = "";
 		//p.waitFor();
 
 	}
