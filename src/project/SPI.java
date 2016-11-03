@@ -2,6 +2,8 @@ package project;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 /**
  * Created by eric on 31-10-16.
@@ -9,7 +11,7 @@ import java.text.DecimalFormat;
 public class SPI {
 
 	public static void main(String[] args) {
-		System.out.println(new DecimalFormat("0000").format(1));
+		System.out.println(LocalTime.now());
 	}
 
 }
