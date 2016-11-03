@@ -1,8 +1,7 @@
 package project;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 
 /**
@@ -11,27 +10,18 @@ import java.time.LocalDateTime;
 public class Webcam {
 
 	public static void main(String[] args) {
-		Process p;
-		String time;
-		String[] cmd = new String[2];
-		System.out.println("starting");
-		cmd[0] = "./webcam.sh";
-		for (int i = 0; i < 2; i++) {
-			System.out.println(i);
-			time = LocalDateTime.now().toString();
-			cmd[1] = time;
-			try {
-				p = Runtime.getRuntime().exec(cmd);
-				System.out.println("process executed");
-				BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
-				String line;
-				while ((line = in.readLine()) != null) {
-					System.out.println(line);
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
+		try {
+			System.out.println("starting to record");
+			ProcessBuilder processBuilder = new ProcessBuilder("./webcam.sh", LocalDateTime.now().toString()).inheritIO();
+			Process p = processBuilder.start();
+			p.waitFor();
+			System.out.println("done recording, now starting to send");
+			for (int i = 1; i <= 11; i++) {
+				System.out.println("sending: " + i);
+				new PictureToBinary().sendPicture(new DecimalFormat("0000").format(i));
 			}
+		} catch (IOException|InterruptedException e) {
+			e.printStackTrace();
 		}
 	}
-
 }
