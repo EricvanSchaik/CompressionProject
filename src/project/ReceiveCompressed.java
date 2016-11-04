@@ -12,6 +12,16 @@ import java.nio.file.Files;
  */
 public class BinaryToPicture {
 
+	public void BinaryToPicture(StringBuilder builder) {
+		String data = (builder.toString());
+		String[] split = data.split(",");
+		System.out.println(split);
+		for (String value : split) {
+			int i = Integer.parseInt(value);
+			if (i != 0) {
+			}
+		}
+	}
 	public static void main(String[] args) throws Exception {
 		BufferedImage image = null;
 		File file = new File("C:/Users/Dylan/Pictures/images/data");

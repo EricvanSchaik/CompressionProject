@@ -1,6 +1,9 @@
 package project;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 /**
  * Created by eric on 31-10-16.
@@ -8,12 +11,7 @@ import java.io.IOException;
 public class SPI {
 
 	public static void main(String[] args) {
-		String[] cmd = {"python", "/home/Pictures/Webcam/sendByte.py", "0xFF"};
-		try {
-			Process p = Runtime.getRuntime().exec(cmd);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		System.out.println(LocalTime.now());
 	}
 
 }
