@@ -4,61 +4,79 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.time.LocalTime;
+import java.util.concurrent.locks.ReentrantLock;
+
 
 /**
  * Created by eric on 25-10-16.
  */
-public class PictureToBinary {
+public class PictureToBinary extends Thread {
 
-	public static String path = "/home/dylan/IdeaProjects/CompressionProject/src/project";
+	public static String path = "/home/pi/Pictures/Webcam";
+	public static ReentrantLock lock = new ReentrantLock();
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
+		new PictureToBinary().sendPicture("144p.jpg");
+	}
+
+	public void sendPicture(String pic) {
 		BufferedImage image = null;
-		String img = (args.length == 1 ? args[1] : "bird.jpg");
+		String img = pic;
 		try {
-			File file = grayScale(path, img);
-			image = ImageIO.read(file);
+//			System.out.println("::Starting to grayscale " + pic + " (" + LocalTime.now() + ")");
+//			File file = grayScale(path, img);
+			image = ImageIO.read(new File(path.concat("/" + img)));
 		} catch (IOException e) {
 			System.out.println("Couldn't find the image");
 		}
 
-		String[] cmd = new String[3];
-		cmd[0] = "python";
-		cmd[1] = "/home/dylan/IdeaProjects/CompressionProject/src/project/sendByte.py";
-		cmd[2] = "";
-		System.out.println("image height: " + image.getHeight());
-		System.out.println("image width: " + image.getWidth());
-		StringBuilder sb = new StringBuilder();
+		String progr = "python";
+		String path = "/home/pi/Pictures/Webcam/sendByte.py";
+		StringBuilder stringBuilder = new StringBuilder();
+		int d = 0;
 		for (int i = 0; i < (image.getHeight()) / 8; i++) {
 			for (int j = 0; j < (image.getWidth()) / 8; j++) {
 				for (int k = 0; k < 8; k++) {
 					for (int l = 0; l < 8; l++) {
 						Color c = new Color(image.getRGB(j*8 + l, i*8 + k));
-						sb.append("0x" + Integer.toHexString(c.getBlue()) + ",");
-						//cmd[2] = cmd[2].concat("0x" + Integer.toHexString(c.getBlue()) + ",");
+						stringBuilder.append("0x" + Integer.toHexString(grayScale(c)) + ",");
+						d++;
+						if (d>25000) {
+							stringBuilder.setLength(stringBuilder.length()-1);
+							System.out.println("    ::250000 bytes worden verstuurd" + " (" + LocalTime.now() + ")");
+							ProcessBuilder pb = new ProcessBuilder(progr, path, stringBuilder.toString());
+							Process p;
+							try {
+								lock.lock();
+								p = pb.start();
+								BufferedReader reader =
+										new BufferedReader(new InputStreamReader(p.getInputStream()));
+								StringBuilder builder = new StringBuilder();
+								String line;
+								while ( (line = reader.readLine()) != null) {
+									builder.append(line);
+									builder.append(System.getProperty("line.separator"));
+								}
+								String result = builder.toString();
+								ReceiveCompressed.handleCompressed(result);
+								//System.out.println(result);
+								p.waitFor();
+								lock.unlock();
+							} catch (IOException|InterruptedException e) {
+								e.printStackTrace();
+							}
+							System.out.println("    ::Zijn verzonden" + " (" + LocalTime.now() + ")");
+							d=0;
+							stringBuilder = new StringBuilder();
+						}
 					}
 				}
 			}
-			//System.out.println(sb.toString());
-			cmd[2] = cmd[2].replaceFirst(".$","");
-			//System.out.println("cmd[2]: " + cmd[2]);
-			sb.setLength(sb.length() - 1);
-			ProcessBuilder pb = new ProcessBuilder(cmd[0], cmd[1], sb.toString());
-			Process p = pb.start();
-			p.waitFor();
-			System.out.println(p.exitValue());
-			sb = new StringBuilder();
-			//Process p = Runtime.getRuntime().exec(cmd);  //Find a faster solution then this too slow
-			System.out.println("third loop done");
-			cmd[2] ="";
 		}
-//		System.out.println("all loops done");
-//		cmd[2] = cmd[2].replaceFirst(".$","");
-//		System.out.println("cmd[2]: " + cmd[2]);
-//		Process p = Runtime.getRuntime().exec(cmd);
 	}
 
-	public static File grayScale(String path, String img) {
+/*	public static File grayScale2(String path, String img) {
 		File output = null;
 		try {
 			BufferedImage image = ImageIO.read(new File(path.concat("/" + img)));
@@ -75,13 +93,17 @@ public class PictureToBinary {
 					image.setRGB(j,i,newColor.getRGB());
 				}
 			}
-			output = new File(path.concat("/grayscale.jpg"));
+			output = new File(path.concat("/" + img + "-gray.jpg"));
 			ImageIO.write(image, "jpg", output);
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return output;
+	}*/
+
+	public static int grayScale(Color c) {
+		return (int)((c.getRed() * 0.299)+(c.getGreen() * 0.587)+(c.getBlue() *0.114));
 	}
 
 }
