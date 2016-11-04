@@ -45,11 +45,22 @@ public class PictureToBinary extends Thread {
 						if (d>25000) {
 							stringBuilder.setLength(stringBuilder.length()-1);
 							System.out.println("    ::250000 bytes worden verstuurd" + " (" + LocalTime.now() + ")");
-							ProcessBuilder pb = new ProcessBuilder(progr, path, stringBuilder.toString()).inheritIO();
+							ProcessBuilder pb = new ProcessBuilder(progr, path, stringBuilder.toString());
 							Process p;
 							try {
 								lock.lock();
 								p = pb.start();
+								BufferedReader reader =
+										new BufferedReader(new InputStreamReader(p.getInputStream()));
+								StringBuilder builder = new StringBuilder();
+								String line;
+								while ( (line = reader.readLine()) != null) {
+									builder.append(line);
+									builder.append(System.getProperty("line.separator"));
+								}
+								String result = builder.toString();
+								ReceiveCompressed.handleCompressed(result);
+								//System.out.println(result);
 								p.waitFor();
 								lock.unlock();
 							} catch (IOException|InterruptedException e) {

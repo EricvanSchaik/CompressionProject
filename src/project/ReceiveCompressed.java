@@ -10,29 +10,28 @@ import java.nio.file.Files;
 /**
  * Created by eric on 25-10-16.
  */
-public class BinaryToPicture {
+public class ReceiveCompressed {
 
-	public void BinaryToPicture(StringBuilder builder) {
-		String data = (builder.toString());
+	public static boolean validData;
+
+	public static void handleCompressed(String data) {
+		validData = false;
 		String[] split = data.split(",");
 		System.out.println(split);
+		int j = 0;
+		File file = new File(PictureToBinary.path + "/" + "data");
 		for (String value : split) {
 			int i = Integer.parseInt(value);
 			if (i != 0) {
+				validData = true;
 			}
+			if (validData) {
+				if (j==0 && i==0) {
+					validData = false;
+				}
+
+			}
+			j = i;
 		}
-	}
-	public static void main(String[] args) throws Exception {
-		BufferedImage image = null;
-		File file = new File("C:/Users/Dylan/Pictures/images/data");
-		byte[] data = Files.readAllBytes(file.toPath());
-		System.out.println("file is created");
-		InputStream in = new ByteArrayInputStream(data);
-		image = ImageIO.read(in);
-
-		System.out.println("image is created");
-		File outputfile = new File("C:/Users/Dylan/Pictures/images/BinarytoPicture.jpg");
-
-		ImageIO.write(image, "jpg", outputfile);
 	}
 }
