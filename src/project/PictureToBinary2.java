@@ -1,9 +1,16 @@
 package project;
 
+import com.pi4j.io.gpio.*;
+import com.pi4j.io.spi.SpiChannel;
+import com.pi4j.io.spi.SpiDevice;
+import com.pi4j.io.spi.SpiFactory;
+import com.pi4j.wiringpi.Spi;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+
 
 /**
  * Created by eric on 25-10-16.
@@ -13,6 +20,11 @@ public class PictureToBinary2 {
 	public static String path = "/home/dylan/IdeaProjects/CompressionProject/src/project";
 
 	public static void main(String[] args) throws Exception {
+		SpiDevice spi = null;
+        spi = SpiFactory.getInstance(SpiChannel.CS0, SpiDevice.DEFAULT_SPI_SPEED, SpiDevice.DEFAULT_SPI_MODE);
+        final GpioController gpio = GpioFactory.getInstance();
+		//GpioPinDigitalInput miso = gpio.provisionDigitalInputPin(RaspiPin.GPIO_09);
+		//GpioPinDigitalOutput mosi  = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_10);
 		BufferedImage image = null;
 		String img = (args.length == 1 ? args[1] : "bird.jpg");
 		try {
@@ -22,10 +34,9 @@ public class PictureToBinary2 {
 			System.out.println("Couldn't find the image");
 		}
 
-		String[] cmd = new String[3];
-		cmd[0] = "python";
-		cmd[1] = "/home/dylan/IdeaProjects/CompressionProject/src/project/sendByte.py";
-		cmd[2] = "";
+		//String[] cmd = new String[3];
+		//String program = "python";
+		//String path = "/home/dylan/IdeaProjects/CompressionProject/src/project/sendByte.py";
 		System.out.println(image.getHeight());
 		System.out.println(image.getWidth());
 		StringBuilder sb = new StringBuilder();
@@ -42,11 +53,12 @@ public class PictureToBinary2 {
 				//p.waitFor();
 				//sb = new StringBuilder();
 				}
-			sb.setLength(sb.length()-1);
-			ProcessBuilder pb = new ProcessBuilder(cmd[0], cmd[1], sb.toString());
-			Process p = pb.start();
-			p.waitFor();
-			sb = new StringBuilder();
+			//sb.setLength(sb.length()-1);
+			//ProcessBuilder pb = new ProcessBuilder(program, path, sb.toString()).inheritIO();
+			//Process p = pb.start();
+			//Process p = pb.start();
+			//p.waitFor();
+			//sb = new StringBuilder();
             //System.out.println("cmd[2]: " + cmd[2]);
             //Process p = Runtime.getRuntime().exec(cmd); //THIS METHOD TAKES A SUPER LONG TIME TO EXCECUTE
             //cmd[2] = "";
@@ -55,7 +67,7 @@ public class PictureToBinary2 {
 			}
 		System.out.println(i);
 		}
-		//sb.setLength(sb.length()-1);
+		sb.setLength(sb.length()-1);
 		//ProcessBuilder pb = new ProcessBuilder(cmd[0], cmd[1], sb.toString());
 		//Process p = pb.start();
 		//p.waitFor();
