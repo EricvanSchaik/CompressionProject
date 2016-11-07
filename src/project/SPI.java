@@ -1,5 +1,6 @@
 package project;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
@@ -14,11 +15,14 @@ import java.util.List;
 public class SPI {
 
 	public static void main(String[] args) {
-		Byte b1 = new Byte((byte)3);
-		Byte b2 = new Byte((byte)3);
-		List<Byte> l = new ArrayList<>();
-		l.add(b1);
-		System.out.println(l.contains(b2));
+		try {
+			FileWriter writer = new FileWriter("test");
+			writer.write(0);
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 }

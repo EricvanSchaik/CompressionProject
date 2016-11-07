@@ -16,7 +16,6 @@ public class PictureToBinary extends Thread {
 
 	public static String path = "/home/pi/Pictures/Webcam";
 	private byte[] data = new byte[4096];
-	private boolean recv;
 	List<Byte> comprFile = new ArrayList<>();
 
 
@@ -41,7 +40,7 @@ public class PictureToBinary extends Thread {
 					for (int l = 0; l < 8; l++) {
 						Color c = new Color(image.getRGB(j*8 + l, i*8 + k));
 						int g = grayScale(c);
-						if (i == 0 && j == 0 && k == 0 && l == 0 && g==0) {
+						if (/*i == 0 && j == 0 && k == 0 && l == 0 && */g==0) {
 							g = 1;
 						}
 						data[d] = (byte)g;
