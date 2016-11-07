@@ -14,9 +14,11 @@ import java.util.List;
 public class SPI {
 
 	public static void main(String[] args) {
-		List<byte[]> data = new ArrayList<byte[]>();
-		data.add(new byte[4096]);
-		System.out.println(Arrays.toString(data.get(0)));
+		Byte b1 = new Byte((byte)3);
+		Byte b2 = new Byte((byte)3);
+		List<Byte> l = new ArrayList<>();
+		l.add(b1);
+		System.out.println(l.contains(b2));
 	}
 
 }

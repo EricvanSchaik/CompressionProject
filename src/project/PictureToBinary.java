@@ -15,8 +15,9 @@ import com.pi4j.wiringpi.Spi;
 public class PictureToBinary extends Thread {
 
 	public static String path = "/home/pi/Pictures/Webcam";
-	private boolean recv = true;
 	private byte[] data = new byte[4096];
+	private boolean recv;
+	List<Byte> comprFile = new ArrayList<>();
 
 
 	public static void main(String[] args) {
@@ -58,13 +59,34 @@ public class PictureToBinary extends Thread {
 			}
 		}
 		Spi.wiringPiSPIDataRW(0,data);
-		while (!arrayContainsD(data)) {
-			data = new byte[1];
-			data[0] = 0;
-			Spi.wiringPiSPIDataRW(0,data);
+		if (arrayContainsD(data)) {
 			compr.add(data);
 		}
-		System.out.println(Arrays.toString(compr.get(0)));
+		while (compr.isEmpty()) {
+			data = new byte[4096];
+			Spi.wiringPiSPIDataRW(0,data);
+			if (arrayContainsD(data)) {
+				compr.add(data);
+			}
+		}
+		while (arrayContainsD(data)) {
+			data = new byte[4096];
+			Spi.wiringPiSPIDataRW(0,data);
+			if (arrayContainsD(data)) {
+				compr.add(data);
+			}
+		}
+		for (byte[] ar : compr) {
+			for (byte b : ar) {
+				comprFile.add(b);
+			}
+		}
+		while (comprFile.get(0) == 0) {
+			comprFile.remove(0);
+		}
+		while (comprFile.get(comprFile.size()-1) == 0) {
+			comprFile.remove(comprFile.size()-1);
+		}
 	}
 
 	public static int grayScale(Color c) {
