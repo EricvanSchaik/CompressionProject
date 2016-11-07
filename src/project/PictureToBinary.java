@@ -87,6 +87,15 @@ public class PictureToBinary extends Thread {
 		while (comprFile.get(comprFile.size()-1) == 0) {
 			comprFile.remove(comprFile.size()-1);
 		}
+		try {
+			FileWriter writer = new FileWriter("output");
+			for (Byte b : comprFile) {
+				writer.write(b);
+			}
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static int grayScale(Color c) {
