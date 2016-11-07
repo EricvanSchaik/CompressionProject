@@ -4,8 +4,10 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.time.LocalTime;
+import java.util.*;
+import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
+import com.pi4j.wiringpi.Spi;
 
 
 /**
@@ -14,7 +16,6 @@ import java.util.concurrent.locks.ReentrantLock;
 public class PictureToBinary extends Thread {
 
 	public static String path = "/home/pi/Pictures/Webcam";
-	public static ReentrantLock lock = new ReentrantLock();
 
 	public static void main(String[] args) {
 		new PictureToBinary().sendPicture("144p.jpg");
@@ -24,83 +25,33 @@ public class PictureToBinary extends Thread {
 		BufferedImage image = null;
 		String img = pic;
 		try {
-//			System.out.println("::Starting to grayscale " + pic + " (" + LocalTime.now() + ")");
-//			File file = grayScale(path, img);
 			image = ImageIO.read(new File(path.concat("/" + img)));
 		} catch (IOException e) {
 			System.out.println("Couldn't find the image");
 		}
-
-		String progr = "python";
-		String path = "/home/pi/Pictures/Webcam/sendByte.py";
-		StringBuilder stringBuilder = new StringBuilder();
 		int d = 0;
+		byte[] data = new byte[4096];
+		List<byte[]> compr = new ArrayList<byte[]>();
+		Spi.wiringPiSPISetup(0,32000000);
 		for (int i = 0; i < (image.getHeight()) / 8; i++) {
 			for (int j = 0; j < (image.getWidth()) / 8; j++) {
 				for (int k = 0; k < 8; k++) {
 					for (int l = 0; l < 8; l++) {
 						Color c = new Color(image.getRGB(j*8 + l, i*8 + k));
-						stringBuilder.append("0x" + Integer.toHexString(grayScale(c)) + ",");
+						data[d] = (byte)grayScale(c);
 						d++;
-						if (d>25000) {
-							stringBuilder.setLength(stringBuilder.length()-1);
-							System.out.println("    ::250000 bytes worden verstuurd" + " (" + LocalTime.now() + ")");
-							ProcessBuilder pb = new ProcessBuilder(progr, path, stringBuilder.toString());
-							Process p;
-							try {
-								lock.lock();
-								p = pb.start();
-								BufferedReader reader =
-										new BufferedReader(new InputStreamReader(p.getInputStream()));
-								StringBuilder builder = new StringBuilder();
-								String line;
-								while ( (line = reader.readLine()) != null) {
-									builder.append(line);
-									builder.append(System.getProperty("line.separator"));
-								}
-								String result = builder.toString();
-								ReceiveCompressed.handleCompressed(result);
-								//System.out.println(result);
-								p.waitFor();
-								lock.unlock();
-							} catch (IOException|InterruptedException e) {
-								e.printStackTrace();
-							}
-							System.out.println("    ::Zijn verzonden" + " (" + LocalTime.now() + ")");
+						if (d>4095) {
+							Spi.wiringPiSPIDataRW(0,data);
+							compr.add(data);
+							data = new byte[4096];
 							d=0;
-							stringBuilder = new StringBuilder();
 						}
 					}
 				}
 			}
 		}
+		System.out.println(Arrays.toString(compr.get(0)));
 	}
-
-/*	public static File grayScale2(String path, String img) {
-		File output = null;
-		try {
-			BufferedImage image = ImageIO.read(new File(path.concat("/" + img)));
-			int width = image.getWidth();
-			int height = image.getHeight();
-			for(int i=0; i<height; i++){
-				for(int j=0; j<width; j++){
-					Color c = new Color(image.getRGB(j, i));
-					int red = (int)(c.getRed() * 0.299);
-					int green = (int)(c.getGreen() * 0.587);
-					int blue = (int)(c.getBlue() *0.114);
-					Color newColor = new Color(red+green+blue,
-							red+green+blue,red+green+blue);
-					image.setRGB(j,i,newColor.getRGB());
-				}
-			}
-			output = new File(path.concat("/" + img + "-gray.jpg"));
-			ImageIO.write(image, "jpg", output);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return output;
-	}*/
 
 	public static int grayScale(Color c) {
 		return (int)((c.getRed() * 0.299)+(c.getGreen() * 0.587)+(c.getBlue() *0.114));
