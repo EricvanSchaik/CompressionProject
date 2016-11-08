@@ -19,7 +19,7 @@ public class Webcam {
 			System.out.println("done recording, now starting to send");
 			for (int i = 1; i <= 11; i++) {
 				System.out.println("::sending -> " + i + " (" + LocalTime.now() + ")");
-				new PictureToBinary().sendPicture(new DecimalFormat("0000").format(i) + ".jpg");
+				new CompressImage().sendPicture(new DecimalFormat("0000").format(i) + ".jpg");
 			}
 		} catch (IOException|InterruptedException e) {
 			e.printStackTrace();

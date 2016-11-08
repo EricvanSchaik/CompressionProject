@@ -4,6 +4,8 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
 import com.pi4j.wiringpi.Spi;
@@ -12,20 +14,22 @@ import com.pi4j.wiringpi.Spi;
 /**
  * Created by eric on 25-10-16.
  */
-public class PictureToBinary extends Thread {
+public class CompressImage extends Thread {
 
 	public static String path = "/home/pi/Pictures/Webcam";
-	private byte[] data = new byte[4096];
 	List<Byte> comprFile = new ArrayList<>();
+	private int packetSize = 4096;
+
 
 
 	public static void main(String[] args) {
-		new PictureToBinary().sendPicture("144p.jpg");
+		new CompressImage().sendPicture("white.jpg");
 	}
 
 	public void sendPicture(String pic) {
 		BufferedImage image = null;
 		String img = pic;
+		byte[] data = new byte[packetSize];
 		try {
 			image = ImageIO.read(new File(path.concat("/" + img)));
 		} catch (IOException e) {
@@ -33,24 +37,25 @@ public class PictureToBinary extends Thread {
 		}
 		int d = 0;
 		List<byte[]> compr = new ArrayList<>();
-		Spi.wiringPiSPISetup(0,32000000);
+		Spi.wiringPiSPISetup(0,1000000);
 		for (int i = 0; i < (image.getHeight()) / 8; i++) {
 			for (int j = 0; j < (image.getWidth()) / 8; j++) {
 				for (int k = 0; k < 8; k++) {
 					for (int l = 0; l < 8; l++) {
 						Color c = new Color(image.getRGB(j*8 + l, i*8 + k));
 						int g = grayScale(c);
-						if (/*i == 0 && j == 0 && k == 0 && l == 0 && */g==0) {
+						if (i == 0 && j == 0 && k == 0 && l == 0 && g==0) {
 							g = 1;
 						}
 						data[d] = (byte)g;
 						d++;
-						if (d>4095) {
+						if (d>(packetSize-1)) {
 							Spi.wiringPiSPIDataRW(0,data);
+							System.out.println(Arrays.toString(data));
 							if (arrayContainsD(data)) {
 								compr.add(data);
 							}
-							data = new byte[4096];
+							data = new byte[packetSize];
 							d=0;
 						}
 					}
@@ -62,15 +67,17 @@ public class PictureToBinary extends Thread {
 			compr.add(data);
 		}
 		while (compr.isEmpty()) {
-			data = new byte[4096];
+			data = new byte[packetSize];
 			Spi.wiringPiSPIDataRW(0,data);
+			System.out.println(Arrays.toString(data));
 			if (arrayContainsD(data)) {
 				compr.add(data);
 			}
 		}
 		while (arrayContainsD(data)) {
-			data = new byte[4096];
+			data = new byte[packetSize];
 			Spi.wiringPiSPIDataRW(0,data);
+			System.out.print(Arrays.toString(data));
 			if (arrayContainsD(data)) {
 				compr.add(data);
 			}
@@ -87,11 +94,7 @@ public class PictureToBinary extends Thread {
 			comprFile.remove(comprFile.size()-1);
 		}
 		try {
-			FileWriter writer = new FileWriter("output");
-			for (Byte b : comprFile) {
-				writer.write(b);
-			}
-			writer.close();
+			Files.write(Paths.get(path + "/output"), listToArray(comprFile));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -108,6 +111,14 @@ public class PictureToBinary extends Thread {
 			}
 		}
 		return false;
+	}
+
+	public byte[] listToArray(List<Byte> ls) {
+		byte[] data = new byte[ls.size()];
+		for (int i = 0; i < data.length; i++) {
+			data[i] = (byte) ls.get(i);
+		}
+		return data;
 	}
 
 }
