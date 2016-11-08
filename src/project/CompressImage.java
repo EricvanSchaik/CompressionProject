@@ -93,8 +93,25 @@ public class CompressImage extends Thread {
 		while (comprFile.get(comprFile.size()-1) == 0) {
 			comprFile.remove(comprFile.size()-1);
 		}
+		BufferedImage newimg = null;
+		File newfile = null;
 		try {
 			Files.write(Paths.get(path + "/output"), listToArray(comprFile));
+			newfile = new File(CompressImage.path + "/newimg.jpg");
+			newimg = ImageIO.read(newfile);
+			int f = 0;
+			for (int i = 0; i < (image.getHeight()) / 8; i++) {
+				for (int j = 0; j < (image.getWidth()) / 8; j++) {
+					for (int k = 0; k < 8; k++) {
+						for (int l = 0; l < 8; l++) {
+							Color color = new Color(comprFile.get(f),comprFile.get(f),comprFile.get(f));
+							newimg.setRGB(j*8+l, i*8+k,color.getRGB());
+							f++;
+						}
+					}
+				}
+			}
+			ImageIO.write(newimg,"jpg",newfile);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
