@@ -14,16 +14,16 @@ import com.pi4j.wiringpi.Spi;
 /**
  * Created by eric on 25-10-16.
  */
-public class CompressImage extends Thread {
+public class CompressImage {
 
 	public static String path = "/home/pi/Pictures/Webcam";
 	List<Byte> comprFile = new ArrayList<>();
-	private int packetSize = 4096;
+	public static int packetSize = 4096;
 
 
 
 	public static void main(String[] args) {
-		new CompressImage().sendPicture("white.jpg");
+		new CompressImage().sendPicture("144p.jpg");
 	}
 
 	public void sendPicture(String pic) {
@@ -96,22 +96,22 @@ public class CompressImage extends Thread {
 		BufferedImage newimg = null;
 		File newfile = null;
 		try {
-			Files.write(Paths.get(path + "/output"), listToArray(comprFile));
-			newfile = new File(CompressImage.path + "/newimg.jpg");
+			Files.write(Paths.get(path + "/compressed" + pic.replace(".jpg","")), listToArray(comprFile));
+			newfile = new File(path + "/" + pic);
 			newimg = ImageIO.read(newfile);
 			int f = 0;
 			for (int i = 0; i < (image.getHeight()) / 8; i++) {
 				for (int j = 0; j < (image.getWidth()) / 8; j++) {
 					for (int k = 0; k < 8; k++) {
 						for (int l = 0; l < 8; l++) {
-							Color color = new Color(comprFile.get(f),comprFile.get(f),comprFile.get(f));
+							Color color = new Color((int)comprFile.get(f)&0xFF,(int)comprFile.get(f)&0xFF,(int)comprFile.get(f)&0xFF);
 							newimg.setRGB(j*8+l, i*8+k,color.getRGB());
 							f++;
 						}
 					}
 				}
 			}
-			ImageIO.write(newimg,"jpg",newfile);
+			ImageIO.write(newimg,"jpg", new File(path + "/resulting" + pic));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -121,7 +121,7 @@ public class CompressImage extends Thread {
 		return (int)((c.getRed() * 0.299)+(c.getGreen() * 0.587)+(c.getBlue() *0.114));
 	}
 
-	public boolean arrayContainsD(byte[] ar) {
+	public static boolean arrayContainsD(byte[] ar) {
 		for (byte a : ar) {
 			if (a != (byte)0) {
 				return true;
